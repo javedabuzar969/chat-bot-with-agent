@@ -49,10 +49,11 @@ async def stream_response(session_id: str, user_input: str) -> AsyncIterator[str
     store = get_session_store()
     agent = get_agent()
 
-    # Seed conversation memory from the persistent session store.
+    # Seed conversation memory from the persistent session store (last 8 messages max).
     history = await store.get_history(session_id)
+    recent_history = history[-8:] if history else []
     messages = []
-    for role, content in history:
+    for role, content in recent_history:
         messages.append(
             HumanMessage(content=content) if role == "user" else AIMessage(content=content)
         )
