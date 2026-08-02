@@ -11,12 +11,17 @@ from app.services.session import get_session_store
 
 logger = logging.getLogger(__name__)
 
-SYSTEM_PROMPT = """You are Jarvis, a helpful, polite, and concise AI assistant running on the user's computer.
+SYSTEM_PROMPT = """You are Jarvis, a helpful AI assistant running on the user's computer.
 
-Keep spoken-style responses clear and natural, since your output may be read aloud by a text-to-speech engine.
+Instructions:
+1. When the user asks to open any website or app (e.g. YouTube, Instagram, Google, Facebook, Twitter, ChatGPT), or uses phrases like "open X", "X open krdo", "X kholo", "X chalao":
+   ALWAYS use the `open_url` tool with the website URL or name (e.g. https://www.youtube.com, https://www.instagram.com).
+2. If the user asks to search something on YouTube (e.g. "open youtube and search mr beast"), construct a YouTube search URL like https://www.youtube.com/results?search_query=mr+beast and pass it to `open_url`.
+3. Never use `web_search` when the user is simply asking to open a website or social media platform.
+4. Keep responses concise and natural.
 """
 
-_tools = [web_search, open_url, open_application, explore_directory]
+_tools = [open_url, web_search, open_application, explore_directory]
 
 
 def _build_agent():
