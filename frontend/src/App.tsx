@@ -5,6 +5,7 @@ type Message = {
   id: string
   sender: 'user' | 'assistant'
   text: string
+  actionUrl?: string   // if present, shows a clickable link button in the bubble
 }
 
 const apiUrl = import.meta.env.VITE_API_URL || ''
@@ -70,7 +71,14 @@ function App() {
           replyText += line
           setCurrentReply(replyText)
         } else if (eventType === 'open_url') {
-          // Backend signalled us to open a URL in the user's browser
+          // Show a clickable link in the chat (handles popup-blocker situation)
+          appendMessage({
+            id: crypto.randomUUID(),
+            sender: 'assistant',
+            text: `Opening: ${line}`,
+            actionUrl: line,
+          })
+          // Also try to open directly — browser may allow or block it
           window.open(line, '_blank', 'noopener,noreferrer')
         } else if (eventType === 'error') {
           throw new Error(line)
@@ -176,6 +184,16 @@ function App() {
                   {messageItem.sender === 'assistant' ? 'Jarvis' : 'You'}
                 </span>
                 <p>{messageItem.text}</p>
+                {messageItem.actionUrl && (
+                  <a
+                    href={messageItem.actionUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="action-link"
+                  >
+                    🔗 Click here to open
+                  </a>
+                )}
               </div>
             ))
           )}

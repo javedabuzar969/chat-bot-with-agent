@@ -176,8 +176,27 @@ button.secondary {
   font-weight: 600;
 }
 
+.action-link {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 16px;
+  background: var(--accent);
+  color: white !important;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.action-link:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
 @media (max-width: 960px) {
   .app-header {
     grid-template-columns: 1fr;
   }
 }
+
