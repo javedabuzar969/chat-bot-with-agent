@@ -69,6 +69,9 @@ function App() {
         if (eventType === 'token') {
           replyText += line
           setCurrentReply(replyText)
+        } else if (eventType === 'open_url') {
+          // Backend signalled us to open a URL in the user's browser
+          window.open(line, '_blank', 'noopener,noreferrer')
         } else if (eventType === 'error') {
           throw new Error(line)
         }

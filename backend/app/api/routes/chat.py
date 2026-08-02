@@ -20,7 +20,11 @@ async def chat(req: ChatRequest, _: None = Depends(require_api_key)):
     async def event_publisher():
         try:
             async for token in stream_response(req.session_id, req.message):
-                yield {"event": "token", "data": token}
+                if token.startswith("__ACTION__:open_url:"):
+                    url = token[len("__ACTION__:open_url:"):]
+                    yield {"event": "open_url", "data": url}
+                else:
+                    yield {"event": "token", "data": token}
             yield {"event": "done", "data": "[DONE]"}
         except Exception as exc:  # noqa: BLE001
             logger.exception("Chat stream failed")

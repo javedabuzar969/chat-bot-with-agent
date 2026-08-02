@@ -56,9 +56,17 @@ async def stream_response(session_id: str, user_input: str) -> AsyncIterator[str
     config = {"configurable": {"thread_id": session_id}}
     collected = ""
     async for chunk in agent.astream({"messages": messages}, config=config):
-        # The prebuilt agent yields dicts with a "agent" key containing messages.
+        # The prebuilt agent yields dicts keyed by graph node name.
         for node, value in chunk.items():
-            if node == "agent":
+            if node == "tools":
+                # Detect special action markers returned by tools.
+                msgs = value.get("messages", []) if isinstance(value, dict) else []
+                for tool_msg in msgs:
+                    content = getattr(tool_msg, "content", None)
+                    if isinstance(content, str) and content.startswith("__OPEN_URL__:"):
+                        url = content[len("__OPEN_URL__:"):]
+                        yield f"__ACTION__:open_url:{url}"
+            elif node == "agent":
                 msg = value.get("messages", [])[-1] if isinstance(value, dict) else None
                 if msg and getattr(msg, "content", None):
                     token = msg.content
